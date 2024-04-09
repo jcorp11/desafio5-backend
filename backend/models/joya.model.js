@@ -9,22 +9,20 @@ const BASE_URL =
 
 const table = "inventario";
 const findAll = async ({ limit = 5, order_by = "stock_DESC", page = 1 }) => {
-  // Consulta para contar el número total de filas en la tabla 'todos'
   const countQuery = `SELECT COUNT(*) FROM ${table}`;
   const { rows: countResult } = await pool.query(countQuery);
   const total_rows = parseInt(countResult[0].count, 10);
-  // Calcula el número total de páginas
   const total_pages = Math.ceil(total_rows / limit);
   const query = `SELECT * FROM ${table} ORDER BY %s %s LIMIT %s OFFSET %s`;
   const [field, direction] = order_by.split("_");
   const offset = (page - 1) * limit;
   const formattedQuery = format(query, field, direction, limit, offset);
   const { rows } = await pool.query(formattedQuery);
-  // Devuelve un array con los resultados y un enlace a cada uno de ellos
+
   const results = rows.map((row) => {
     return {
       ...row,
-      href: `${BASE_URL}/joyas/${row.id}`,
+      href: `${BASE_URL}/joyas/${row.id}`, // no esta implementado pero lo dejo para HATEOAS
     };
   });
   // Devuelve un objeto con los resultados, el número total de páginas y los enlaces a la página siguiente y anterior
