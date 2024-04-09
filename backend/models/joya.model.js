@@ -10,9 +10,11 @@ const BASE_URL =
 const table = "inventario";
 const findAll = async ({ limit = 5, order_by = "stock_DESC", page = 1 }) => {
   const countQuery = `SELECT COUNT(*) FROM ${table}`;
+
   const { rows: countResult } = await pool.query(countQuery);
   const total_rows = parseInt(countResult[0].count, 10);
   const total_pages = Math.ceil(total_rows / limit);
+
   const query = `SELECT * FROM ${table} ORDER BY %s %s LIMIT %s OFFSET %s`;
   const [field, direction] = order_by.split("_");
   const offset = (page - 1) * limit;
@@ -48,11 +50,14 @@ const findByFiltros = async ({ precio_max, precio_min, categoria, metal }) => {
     const { length } = filtros;
     filtros.push(`${campo} ${comparador} $${length + 1}`);
   };
+
   if (precio_max) agregarFiltro("precio", "<=", precio_max);
   if (precio_min) agregarFiltro("precio", ">=", precio_min);
   if (categoria) agregarFiltro("categoria", "=", categoria);
   if (metal) agregarFiltro("metal", "=", metal);
+
   let consulta = `SELECT * FROM ${table}`;
+
   if (filtros.length > 0) {
     filtros = filtros.join(" AND ");
     consulta += ` WHERE ${filtros}`;
