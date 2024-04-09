@@ -2,24 +2,10 @@ import express from "express";
 import cors from "cors";
 import "dotenv/config";
 import joyaRoute from "./routes/joya.route.js";
+import { logEndpoint, logSuccess } from "./middlewares/joya.middleware.js";
 
 const PORT = process.env.PORT || 3500;
 const app = express();
-
-function logEndpoint(req, res, next) {
-  console.log(`Request recieved: ${req.method} ${req.path}`);
-  next(); // Llama a next() para pasar la solicitud al siguiente middleware
-}
-
-function logSuccess(req, res, next) {
-  const originalSend = res.send;
-
-  res.send = function (data) {
-    console.log(`Success: ${req.method} ${req.path}`);
-    originalSend.apply(res, arguments);
-  };
-  next();
-}
 
 // Usar el middleware en todas las rutas
 app.use(logEndpoint);
